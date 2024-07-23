@@ -108,8 +108,6 @@ class MealPlannerApp:
 
         self.root.bind("<Return>", lambda event: self.submit_button.invoke())
 
-
-
     def create_meal_plan_widgets(self):
         self.meal_plan_label = ttk.Label(self.meal_plan_frame, text="Weekly Meal Plan", font=("Helvetica", 16, "bold"))
         self.meal_plan_label.grid(row=0, column=0, columnspan=2, pady=5, sticky=(tk.W, tk.E))
@@ -177,6 +175,9 @@ class MealPlannerApp:
         allergies = [allergy.strip().lower() for allergy in self.allergy_entry.get().strip().split(',') if allergy.strip()]
         available_ingredients = [entry.get().strip().lower() for entry in self.ingredient_entries if entry.get().strip()]
 
+        if not available_ingredients:
+            available_ingredients = []
+
         meal_plan = self.generate_meal_plan(dietary_preferences, available_ingredients, allergies)
 
         days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
@@ -206,7 +207,7 @@ class MealPlannerApp:
         self.show_frame(self.details_frame)
 
     def generate_meal_plan(self, dietary_preferences, available_ingredients, allergies):
-    # Filter recipes based on dietary preferences
+        # Filter recipes based on dietary preferences
         if dietary_preferences == "all":
             filtered_recipes = recipes
         else:
@@ -214,13 +215,16 @@ class MealPlannerApp:
 
         # Function to check if recipe contains at least 2 of the available ingredients
         def contains_at_least_two_ingredients(recipe, ingredients):
+            if not ingredients:
+                return True
             recipe_ingredients = [i.lower() for i in recipe['ingredients']]
             return len([ingredient for ingredient in recipe_ingredients if ingredient in ingredients]) >= 2
 
         # Function to check if recipe contains any of the allergies
         def contains_allergies(recipe, allergies):
+            if not allergies:
+                return True
             recipe_ingredients = [i.lower() for i in recipe['ingredients']]
-            # Check if any of the allergens are in the recipe ingredients
             return not any(allergy in recipe_ingredients for allergy in allergies)
 
         # Filter recipes based on available ingredients and allergies
