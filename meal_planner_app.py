@@ -7,45 +7,39 @@ class MealPlannerApp:
         self.root = root
         self.root.title("Simple Meal Planner")
 
-        # Center the window on the screen
         self.center_window(500, 300)
 
-        # Create frames for different views
         self.create_frames()
         self.style_widgets()
 
-        # Initially show the input frame
         self.show_frame(self.input_frame)
 
     def center_window(self, width, height):
-        # Get the dimensions of the screen
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
 
-        # Calculate the x and y coordinates to position the window
         x = (screen_width - width) // 2
         y = (screen_height - height) // 2
 
-        # Set the window size and position
         self.root.geometry(f"{width}x{height}+{x}+{y}")
 
     def create_frames(self):
-        # Create the main frame for input page
+        # Main frame for input page
         self.input_frame = ttk.Frame(self.root, padding="10")
         self.input_frame.grid(row=0, column=0, sticky=(tk.N, tk.S, tk.E, tk.W))
         self.create_input_widgets()
 
-        # Create the main frame for meal plan page with scrolling
+        # Main frame for meal plan page with scrolling
         self.meal_plan_frame = ttk.Frame(self.root, padding="10")
         self.create_meal_plan_widgets()
         self.meal_plan_frame.grid(row=0, column=0, sticky=(tk.N, tk.S, tk.E, tk.W))
-        self.meal_plan_frame.lower()  # Hide by default
+        self.meal_plan_frame.lower() 
 
-        # Create the main frame for meal details page with scrolling
+        # Main frame for meal details page with scrolling
         self.details_frame = ttk.Frame(self.root, padding="10")
         self.create_details_widgets()
         self.details_frame.grid(row=0, column=0, sticky=(tk.N, tk.S, tk.E, tk.W))
-        self.details_frame.lower()  # Hide by default
+        self.details_frame.lower()  
 
         # Configure grid weights for the root window and each frame
         self.root.grid_rowconfigure(0, weight=1)
@@ -69,42 +63,44 @@ class MealPlannerApp:
         self.details_frame.grid_columnconfigure(1, weight=1)
 
     def create_input_widgets(self):
-        # Create and place widgets for the input frame
+
         self.label = ttk.Label(self.input_frame, text="Welcome to the Simple Meal Planner", font=("Helvetica", 16, "bold"))
         self.label.grid(row=0, column=0, columnspan=2, pady=5, sticky=(tk.W, tk.E))
 
-        self.pref_label = ttk.Label(self.input_frame, text="Dietary Preferences:", font=("Helvetica", 12), anchor="e")
-        self.pref_label.grid(row=1, column=0, pady=5, sticky=tk.E)
+        self.new_label = ttk.Label(self.input_frame, text="Please enter your preferences and minimum two ingredients below:", font=("Helvetica", 12))
+        self.new_label.grid(row=1, column=0, columnspan=2, pady=5, sticky=(tk.W, tk.E))
 
-        # Create a dropdown (Combobox) for dietary preferences
+        self.pref_label = ttk.Label(self.input_frame, text="Dietary Preferences:", font=("Helvetica", 12), anchor="e")
+        self.pref_label.grid(row=2, column=0, pady=5, sticky=tk.E)
+
         self.pref_options = ["None", "Vegetarian", "Vegan", "Gluten-Free", "Non-Vegetarian"]
         self.pref_combobox = ttk.Combobox(self.input_frame, values=self.pref_options, state="readonly", width=28)
-        self.pref_combobox.set(self.pref_options[0])  # Set default option
-        self.pref_combobox.grid(row=1, column=1, pady=5, sticky=(tk.W, tk.E))
+        self.pref_combobox.set(self.pref_options[0]) 
+        self.pref_combobox.grid(row=2, column=1, pady=5, sticky=(tk.W, tk.E))
 
         # Create fields for multiple ingredients
         self.ingredient_labels = []
         self.ingredient_entries = []
-        for i in range(3):  # Assume up to 3 ingredients
+        for i in range(3): 
             label = ttk.Label(self.input_frame, text=f"Ingredient {i+1}:", font=("Helvetica", 12), anchor="e")
-            label.grid(row=2 + i, column=0, pady=5, sticky=tk.E)
+            label.grid(row=3 + i, column=0, pady=5, sticky=tk.E)
             entry = ttk.Entry(self.input_frame, width=30)
-            entry.grid(row=2 + i, column=1, pady=5, sticky=(tk.W, tk.E))
+            entry.grid(row=3 + i, column=1, pady=5, sticky=(tk.W, tk.E))
             self.ingredient_labels.append(label)
             self.ingredient_entries.append(entry)
 
         self.submit_button = ttk.Button(self.input_frame, text="Submit", command=self.show_meal_plan)
-        self.submit_button.grid(row=5, column=0, columnspan=2, pady=10)
+        self.submit_button.grid(row=6, column=0, columnspan=2, pady=10)
 
-        # Bind Enter key to the submit button
         self.root.bind("<Return>", lambda event: self.submit_button.invoke())
 
+
     def create_meal_plan_widgets(self):
-        # Create and place widgets for the meal plan frame
+        
         self.meal_plan_label = ttk.Label(self.meal_plan_frame, text="Weekly Meal Plan", font=("Helvetica", 16, "bold"))
         self.meal_plan_label.grid(row=0, column=0, columnspan=2, pady=5, sticky=(tk.W, tk.E))
 
-        # Add a canvas and scrollbar to allow scrolling if necessary
+        #Scrollbar
         self.meal_plan_canvas = tk.Canvas(self.meal_plan_frame)
         self.meal_plan_scrollbar = ttk.Scrollbar(self.meal_plan_frame, orient="vertical", command=self.meal_plan_canvas.yview)
         self.meal_plan_content = ttk.Frame(self.meal_plan_canvas)
@@ -116,32 +112,26 @@ class MealPlannerApp:
         self.meal_plan_scrollbar.config(command=self.meal_plan_canvas.yview)
         self.meal_plan_scrollbar.grid(row=1, column=1, sticky="ns")
 
-        # Bind mouse wheel event to the canvas for scrolling
         self.meal_plan_canvas.bind_all("<MouseWheel>", self.on_mouse_wheel)
 
-        # Adjust layout to ensure Back button is fully visible
         self.back_to_input_button = ttk.Button(self.meal_plan_frame, text="Back", command=self.show_input_page)
         self.back_to_input_button.grid(row=2, column=0, columnspan=2, pady=10)
 
-        # Configure grid weights for scrolling
         self.meal_plan_frame.grid_rowconfigure(1, weight=1)
         self.meal_plan_frame.grid_columnconfigure(0, weight=1)
 
     def create_details_widgets(self):
-        # Create and place widgets for the details frame
+
         self.details_label = ttk.Label(self.details_frame, text="", font=("Helvetica", 16, "bold"))
         self.details_label.grid(row=0, column=0, columnspan=2, pady=5, sticky=(tk.W, tk.E))
 
-        # Use a Text widget for multi-line details content
         self.details_content = tk.Text(self.details_frame, wrap=tk.WORD, font=("Helvetica", 12), height=10)
         self.details_content.grid(row=1, column=0, columnspan=2, pady=5, sticky=(tk.W, tk.E))
         
-        # Add a scrollbar for the Text widget
         self.details_scrollbar = ttk.Scrollbar(self.details_frame, orient="vertical", command=self.details_content.yview)
         self.details_scrollbar.grid(row=1, column=2, sticky="ns")
         self.details_content.config(yscrollcommand=self.details_scrollbar.set)
 
-        # Adjust layout to ensure Back button is fully visible
         self.back_to_meal_plan_button = ttk.Button(self.details_frame, text="Back", command=self.show_meal_plan)
         self.back_to_meal_plan_button.grid(row=2, column=0, columnspan=2, pady=10, )
 
@@ -193,7 +183,7 @@ class MealPlannerApp:
 
         self.show_frame(self.meal_plan_frame)
 
-#show instructions and ingredients for all the dishes present
+    # Show instructions and ingredients for all the dishes present
     def show_meal_details(self, meal):
         self.details_label.config(text=meal['name'])
         ingredients_text = f"Ingredients: {', '.join(meal['ingredients'])}"
@@ -208,16 +198,15 @@ class MealPlannerApp:
 
 
     def generate_meal_plan(self, dietary_preferences, available_ingredients):
-        # If "None" is selected, do not filter by dietary preferences
+
         if dietary_preferences == "none":
             filtered_recipes = recipes
         else:
-            # Filter recipes based on dietary preferences
             filtered_recipes = [recipe for recipe in recipes if dietary_preferences in recipe['diet'].lower()]
 
         # Function to check if recipe contains at least 2 of the available ingredients
         def contains_at_least_two_ingredients(recipe, ingredients):
-            recipe_ingredients = [i.lower() for i in recipe['ingredients']]  # Normalize recipe ingredients to lowercase
+            recipe_ingredients = [i.lower() for i in recipe['ingredients']]  
             return len([ingredient for ingredient in recipe_ingredients if ingredient in ingredients]) >= 2
 
         meal_plan = [recipe for recipe in filtered_recipes if contains_at_least_two_ingredients(recipe, available_ingredients)]
